@@ -1,66 +1,58 @@
 import React, { Component } from 'react';
 import { ITweet } from '../../types';
-import Axios from 'axios';
-import './style.css';
 import Tweet from '../Tweet';
 import { RouteComponentProps } from 'react-router-dom';
-import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
+import { getTweets } from '../../Services/getTweets';
+import './style.css';
 
-const TWITTER_AUTH_TOKEN = process.env.REACT_APP_TWITTER_AUTH_TOKEN;
-
-//Your API token. This is needed to successfully authenticate when calling the tweets endpoint.
-//This needs to be added to the Authorization header (using the Bearer authentication scheme) in the request you send to the tweets endpoint.
-// const apiToken = '8c5996d5-fb89-46c9-8821-7063cfbc18b1'
 interface ITweetsState {
-  tweetsByUserName: ITweet[] | [];
+  tweetsByUserName: ITweet[] | null;
   isError: boolean;
   username: string | null;
 }
 
 class Tweets extends Component<RouteComponentProps, ITweetsState> {
   state: ITweetsState = {
-    tweetsByUserName: [],
+    tweetsByUserName: null,
     isError: false,
     username: '',
   };
 
-  async componentDidMount() {
+  getUsernameFromParams() {
     const query = new URLSearchParams(this.props.location.search);
-    const username = query.get('query');
-    this.setState({ ...this.state, username: username });
+    return query.get('query');
+  }
 
-    try {
-      Axios.get(
-        `https://api.twitter.com/2/tweets/search/recent?query=from:${username}&tweet.fields=entities&expansions=author_id&user.fields=created_at`,
-        {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            Authorization: `Bearer ${TWITTER_AUTH_TOKEN}`,
-          },
-        },
-      ).then((response) => {
-        if (response.status === 200) {
-          return this.setState({
-            tweetsByUserName: response.data,
-            isError: false,
-          });
-        }
-        this.setState({
-          tweetsByUserName: [],
-          isError: true,
-        });
-      });
-    } catch (error) {
-      this.setState({ tweetsByUserName: [], isError: true });
+  async fetchTweets(username: string) {
+    const result: ITweet[] | Error = await getTweets(username);
+    if (result instanceof Error) {
+      return this.setState((prevState) => ({
+        ...prevState,
+        tweetsByUserName: [],
+        isError: true,
+      }));
+    }
+    this.setState((prevState) => ({
+      ...prevState,
+      tweetsByUserName: result,
+      isError: false,
+    }));
+  }
+
+  async componentDidMount() {
+    const username = this.getUsernameFromParams();
+    if (username) {
+      this.setState({ ...this.state, username: username });
+      this.fetchTweets(username);
     }
   }
 
-  componentDidUpdate() {
-    const query = new URLSearchParams(this.props.location.search);
-    const username = query.get('query');
-    if (username !== this.state.username) {
-      console.log(username);
+  async componentDidUpdate() {
+    console.log(this.state.tweetsByUserName)
+    const username = this.getUsernameFromParams();
+    if (username && username !== this.state.username) {
       this.setState({ ...this.state, username: username });
+      this.fetchTweets(username);
     }
   }
   // //TODO Retrieve the user name passed to this component after clicking the Submit button, and use it to query the
@@ -144,11 +136,12 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
               </div>
             </div>
             <div className='tweet-items-container'>
-              {this.state.tweetsByUserName.map((tweet: ITweet) => (
-                <div key={`tweet-${tweet.id}`}>
-                  <Tweet tweet={tweet} />
-                </div>
-              ))}
+              {this.state.tweetsByUserName &&
+                this.state.tweetsByUserName.map((tweet: ITweet) => (
+                  <div key={`tweet-${tweet.id}`}>
+                    <Tweet tweet={tweet} />
+                  </div>
+                ))}
             </div>
             {this.state.isError && (
               <p>Something went wrong: unable to fetch tweets..</p>
