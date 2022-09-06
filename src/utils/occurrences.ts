@@ -1,5 +1,5 @@
 // returns most common occurrence of a string in an array or N/A if none found
-export const findMostOccurring = (stringArr: string[]) => {
+const findMostOccurring = (stringArr: string[]) => {
   if (!stringArr.length) {
     return 'N/A';
   }
@@ -12,13 +12,13 @@ export const findMostOccurring = (stringArr: string[]) => {
       occurences[string] = 1;
     }
   }
-  const mostOccurences: number = Object.values(occurences).sort(
+  const mostOccurences = Object.values(occurences).sort(
     (a, b) => b - a,
   )[0];
-  const mostOccurring: string | undefined = Object.keys(occurences).find(
-    (hashtag) => occurences[hashtag] === mostOccurences,
+  const mostOccurringString = Object.keys(occurences).find(
+    (string) => occurences[string] === mostOccurences,
   );
-  return mostOccurring;
+  return mostOccurringString;
 };
 
 export default findMostOccurring;

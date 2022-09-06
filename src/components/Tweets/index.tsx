@@ -1,9 +1,9 @@
 // eslint-disable-next-line no-use-before-define
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { findMostOccurring } from '../../utils/occurrences';
 import getTweets from '../../services/getTweets';
 import getTimeDifference from '../../utils/date';
+import findMostOccurring from '../../utils/occurrences';
 import { ITweet, ITwitterData } from '../../types';
 import Tweet from '../Tweet';
 import './style.css';
