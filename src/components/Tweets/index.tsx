@@ -36,7 +36,10 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
     const { searchTerm } = this.state;
     const newSearchTerm = this.getSearchTermFromParams();
     if (newSearchTerm && newSearchTerm !== searchTerm) {
-      this.setState((prevState) => ({ ...prevState, searchTerm }));
+      this.setState((prevState) => ({
+        ...prevState,
+        searchTerm: newSearchTerm,
+      }));
       this.fetchTweets(newSearchTerm);
     }
   }
@@ -44,7 +47,7 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
   getSearchTermFromParams() {
     const { location } = this.props;
     const query = new URLSearchParams(location.search);
-    return query.get('query');
+    return query.get('search');
   }
 
   // Finds most often occurring hashtag
@@ -113,18 +116,6 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
           </div>
         </div>
         <div>
-          <div className="stats-box">
-            <div className="stats-box-heading">Longest Tweet ID</div>
-            <div id="longest-tweet-id" className="stats-box-info">
-              {/* {this.getLongestTweetIdPrefix(this.state.tweetsData)} */}
-            </div>
-          </div>
-          <div className="stats-box-right stats-box">
-            <div className="stats-box-heading">Most days between Tweets</div>
-            <div id="most-days" className="stats-box-info">
-              {/* {this.getMostDaysBetweenTweets(this.state.tweetsData)} */}
-            </div>
-          </div>
           <div className="tweet-items-container">
             {tweetsData
               && tweetsData?.data?.map((tweet: ITweet) => (

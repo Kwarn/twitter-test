@@ -1,4 +1,4 @@
-/* returns most common occurrence of a string in an array or N/A if none found */
+// returns most common occurrence of a string in an array or N/A if none found
 export const findMostOccurring = (stringArr: string[]) => {
   if (!stringArr.length) {
     return 'N/A';

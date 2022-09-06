@@ -24,7 +24,7 @@ export default class SearchTermForm extends Component<
     const { searchTerm } = this.state;
     history.push({
       pathname: '/tweets',
-      search: `?query=${searchTerm}`,
+      search: `?search=${searchTerm}`,
     });
   };
 
