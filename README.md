@@ -8,8 +8,8 @@ Fetches 10 random tweets by a user-provided searchTerm, displays the time betwee
 
 ## features
 
-netlify to bypass twitters v2 API no CORS requests policy
-linting
+netlify to bypass twitters v2 API no CORS requests policy,
+linting,
 utility functions -> find time difference & find most common string in array (hashtags)
 
 ## Run
