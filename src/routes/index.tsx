@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
-import UserNameForm from '../Components/UserNameForm';
-import Tweets from '../Components/Tweets';
+import UserNameForm from '../components/SearchTermForm';
+import Tweets from '../components/Tweets';
 
 export default () => (
   <BrowserRouter>

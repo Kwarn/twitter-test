@@ -1,77 +1,97 @@
 import React, { Component } from 'react';
-import { ITweet } from '../../types';
+import { ITweet, ITwitterData } from '../../types';
 import Tweet from '../Tweet';
 import { RouteComponentProps } from 'react-router-dom';
-import { getTweets } from '../../Services/getTweets';
+import { getTweets } from '../../services/getTweets';
 import './style.css';
 
 interface ITweetsState {
-  tweetsByUserName: ITweet[] | null;
+  tweetsData: ITwitterData | null;
   isError: boolean;
-  username: string | null;
+  searchTerm: string | null;
 }
 
 class Tweets extends Component<RouteComponentProps, ITweetsState> {
   state: ITweetsState = {
-    tweetsByUserName: null,
+    tweetsData: null,
     isError: false,
-    username: '',
+    searchTerm: '',
   };
 
-  getUsernameFromParams() {
+  getSearchTermFromParams() {
     const query = new URLSearchParams(this.props.location.search);
     return query.get('query');
   }
 
-  async fetchTweets(username: string) {
-    const result: ITweet[] | Error = await getTweets(username);
+  async fetchTweets(searchTerm: string) {
+    const result: ITwitterData | Error = await getTweets(searchTerm);
     if (result instanceof Error) {
       return this.setState((prevState) => ({
         ...prevState,
-        tweetsByUserName: [],
+        tweetsData: null,
         isError: true,
       }));
     }
     this.setState((prevState) => ({
       ...prevState,
-      tweetsByUserName: result,
+      tweetsData: result,
       isError: false,
     }));
   }
 
-  async componentDidMount() {
-    const username = this.getUsernameFromParams();
-    if (username) {
-      this.setState({ ...this.state, username: username });
-      this.fetchTweets(username);
+  componentDidMount() {
+    const searchTerm = this.getSearchTermFromParams();
+    if (searchTerm) {
+      this.setState((prevState) => ({ ...prevState, searchTerm: searchTerm }));
+      this.fetchTweets(searchTerm);
     }
   }
 
-  async componentDidUpdate() {
-    console.log(this.state.tweetsByUserName)
-    const username = this.getUsernameFromParams();
-    if (username && username !== this.state.username) {
-      this.setState({ ...this.state, username: username });
-      this.fetchTweets(username);
+  componentDidUpdate() {
+    const searchTerm = this.getSearchTermFromParams();
+    if (searchTerm && searchTerm !== this.state.searchTerm) {
+      this.setState({ ...this.state, searchTerm: searchTerm });
+      this.fetchTweets(searchTerm);
     }
   }
-  // //TODO Retrieve the user name passed to this component after clicking the Submit button, and use it to query the
-  // //Tweets API endpoint. The user name needs to be passed into the tweets endpoint as a query param called
-  // //userName.
 
-  // /**
-  //  * Retrieves the most popular hash tag tweeted by the given user.
-  //  * Note that the string returned by this method should not include the hashtag itself.
-  //  * For example, if the most popular hash tag is "#React", this method should return "React".
-  //  * If there are no tweets for the given user, this method should return "N/A".
-  //  */
-  // getMostPopularHashTag(tweets) {
-  //   //TODO Implement
-  //   //pseudo code due to time constraints
-  //   /*
+  getMostPopularHashTag() {
+    // const hashtags = this.state.tweetsData?.data
+    //   ?.map((tweet) => tweet.entities?.hashtags?.map((ht) => ht.tag))
+    //   .flat()
+    //   .filter((exists) => exists);
 
-  //   */
-  // }
+    // const occurences = hashtags?.reduce(
+    //   (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
+    //   new Map(),
+    // );
+
+    // harder to read ? ^
+
+    const hashtags = [];
+    if (this.state.tweetsData?.data) {
+      for (const tweet of this.state.tweetsData.data) {
+        if (tweet.entities?.hashtags) {
+          for (const hashtagObj of tweet.entities.hashtags) {
+            hashtags.push(hashtagObj.tag);
+          }
+        }
+      }
+    }
+    const occurences: { [key: string]: number } = {};
+    for (const tag of hashtags) {
+      if (occurences[tag]) {
+        occurences[tag] += 1;
+      } else {
+        occurences[tag] = 1;
+      }
+    }
+    const mostOccurences = Object.values(occurences).sort((a, b) => b - a)[0];
+    const mostCommonHashTag = Object.keys(occurences).filter(
+      (hashtag) => occurences[hashtag] === mostOccurences,
+    );
+    return mostCommonHashTag || 'N/A';
+  }
 
   // /**
   //  * Retrieves the highest number of tweets that were created on any given day by the given user.
@@ -112,13 +132,13 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
             <div className='stats-box'>
               <div className='stats-box-heading'>Most popular hashtag</div>
               <div id='most-popular-hashtag' className='stats-box-info'>
-                {/* {this.getMostPopularHashTag(this.state.tweetsByUserName)} */}
+                {this.getMostPopularHashTag()}
               </div>
             </div>
             <div className='stats-box-right stats-box'>
               <div className='stats-box-heading'>Most Tweets in one days</div>
               <div id='most-tweets' className='stats-box-info'>
-                {/* {this.getMostTweetsInOneDay(this.state.tweetsByUserName)} */}
+                {/* {this.getMostTweetsInOneDay(this.state.tweetsData)} */}
               </div>
             </div>
           </div>
@@ -126,20 +146,27 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
             <div className='stats-box'>
               <div className='stats-box-heading'>Longest Tweet ID</div>
               <div id='longest-tweet-id' className='stats-box-info'>
-                {/* {this.getLongestTweetIdPrefix(this.state.tweetsByUserName)} */}
+                {/* {this.getLongestTweetIdPrefix(this.state.tweetsData)} */}
               </div>
             </div>
             <div className='stats-box-right stats-box'>
               <div className='stats-box-heading'>Most days between Tweets</div>
               <div id='most-days' className='stats-box-info'>
-                {/* {this.getMostDaysBetweenTweets(this.state.tweetsByUserName)} */}
+                {/* {this.getMostDaysBetweenTweets(this.state.tweetsData)} */}
               </div>
             </div>
             <div className='tweet-items-container'>
-              {this.state.tweetsByUserName &&
-                this.state.tweetsByUserName.map((tweet: ITweet) => (
+              {this.state.tweetsData &&
+                this.state.tweetsData?.data?.map((tweet: ITweet) => (
                   <div key={`tweet-${tweet.id}`}>
-                    <Tweet tweet={tweet} />
+                    <Tweet
+                      username={
+                        this.state.tweetsData?.includes?.users.find(
+                          (user) => user.id === tweet.author_id,
+                        )?.username
+                      }
+                      tweet={tweet}
+                    />
                   </div>
                 ))}
             </div>

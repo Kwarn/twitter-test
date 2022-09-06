@@ -1,0 +1,44 @@
+.tweet-container {
+  height: 200px;
+  max-width: 400px;
+  min-width: 320px;
+  padding: 10px;
+  background: rgb(237, 237, 237);
+  box-shadow: 3px 3px rgb(175, 175, 175);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  margin: 10px auto;
+}
+
+.tweet-text-container {
+  height: 100%;
+  width: 100%;
+}
+
+.tweet-title {
+  width: fit-content;
+  padding: 0 10px;
+  display: flex;
+  margin: auto auto auto 0;
+  flex-direction: column;
+  background: rgb(166, 220, 243);
+  border-radius: 10px;
+  text-align: left;
+}
+
+.tweet-text {
+  font-size: 14px;
+  word-wrap: break-word;
+}
+
+.hashtag-container {
+  display: flex;
+  flex-direction: wrap;
+  border-radius: 10px;
+}
+
+.hashtag-string {
+  font-size: 12px;
+}
