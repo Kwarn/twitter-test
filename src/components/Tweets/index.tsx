@@ -95,6 +95,13 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
     }));
   }
 
+  findUsernameByAuthorId(tweet: ITweet) {
+    const { tweetsData } = this.state;
+    return tweetsData?.includes?.users.find(
+      (user) => user.id === tweet.author_id,
+    )?.username;
+  }
+
   render() {
     const { tweetsData, isError } = this.state;
     return (
@@ -121,11 +128,7 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
               && tweetsData?.data?.map((tweet: ITweet) => (
                 <div key={`tweet-${tweet.id}`}>
                   <Tweet
-                    username={
-                      tweetsData?.includes?.users.find(
-                        (user) => user.id === tweet.author_id,
-                      )?.username
-                    }
+                    username={this.findUsernameByAuthorId(tweet)}
                     tweet={tweet}
                   />
                 </div>
