@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 export interface Image {
   url: string;
   width: number;
@@ -54,14 +55,14 @@ export interface ITweet {
   id: string;
 }
 
-export interface IIncludes {
-  users: IUser[];
-}
-
 export interface IUser {
   id: string;
   name: string;
   username: string;
+}
+
+export interface IIncludes {
+  users: IUser[];
 }
 
 export interface IMeta {

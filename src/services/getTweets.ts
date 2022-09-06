@@ -1,10 +1,13 @@
 import Axios from 'axios';
 
-export const getTweets = async (searchTerm: string) => {
+const getTweets = async (searchTerm: string) => {
   try {
-    const response = await Axios.get(`/.netlify/functions/get-tweets?search=${searchTerm}`, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await Axios.get(
+      `/.netlify/functions/get-tweets?search=${searchTerm}`,
+      {
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
     if (response.status === 200) {
       return response.data;
     }
@@ -13,3 +16,5 @@ export const getTweets = async (searchTerm: string) => {
     return error;
   }
 };
+
+export default getTweets;

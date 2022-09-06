@@ -4,6 +4,7 @@ export const findMostOccurring = (stringArr: string[]) => {
     return 'N/A';
   }
   const occurences: { [key: string]: number } = {};
+  // eslint-disable-next-line no-restricted-syntax
   for (const string of stringArr) {
     if (occurences[string]) {
       occurences[string] += 1;
@@ -20,15 +21,17 @@ export const findMostOccurring = (stringArr: string[]) => {
   return mostOccurring;
 };
 
+export default findMostOccurring;
+
 // alternative approach
-/* 
+/*
     const hashtags = this.state.tweetsData?.data
       ?.map((tweet) => tweet.entities?.hashtags?.map((ht) => ht.tag))
       .flat()
       .filter((exists) => exists);
-  
+
     const occurences = hashtags?.reduce(
       (acc, cur) => acc.set(cur, (acc.get(cur) || 0) + 1),
       new Map(),
-    ); 
+    );
 */

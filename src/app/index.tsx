@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+// eslint-disable-next-line no-use-before-define
+import React from 'react';
 import Routes from '../routes';
 
-class App extends Component {
-  render() {
-    return <Routes />;
-  }
+export function App() {
+  return <Routes />;
 }
 
 export default App;
