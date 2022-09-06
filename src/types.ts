@@ -48,6 +48,7 @@ export interface IEntities {
 
 export interface ITweet {
   text: string;
+  created_at: string;
   entities?: IEntities;
   author_id: string;
   id: string;

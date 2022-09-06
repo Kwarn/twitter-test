@@ -1,7 +1,6 @@
 import { Handler } from '@netlify/functions';
 import Axios from 'axios';
 
-
 /* 
  Using netlify to get around twitter api v2 not supporting CORs requests
  directly from front-end
@@ -14,7 +13,7 @@ export const handler: Handler = async (event, context) => {
 
   try {
     const { data } = await Axios.get(
-      `https://api.twitter.com/2/tweets/search/recent?query=${searchTerm}&tweet.fields=entities&expansions=author_id`,
+      `https://api.twitter.com/2/tweets/search/recent?query=${searchTerm}&tweet.fields=entities,created_at&expansions=author_id`,
       {
         headers: {
           Authorization: `Bearer ${TWITTER_AUTH_TOKEN}`,

@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+
+import { findMostOccurring } from '../../utils/occurrences';
+import { getTweets } from '../../services/getTweets';
+import { getTimeDifference } from '../../utils/date';
 import { ITweet, ITwitterData } from '../../types';
 import Tweet from '../Tweet';
-import { RouteComponentProps } from 'react-router-dom';
-import { getTweets } from '../../services/getTweets';
 import './style.css';
 
 interface ITweetsState {
@@ -55,19 +58,8 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
     }
   }
 
+  // Finds most often occurring hashtag
   getMostPopularHashTag() {
-    // const hashtags = this.state.tweetsData?.data
-    //   ?.map((tweet) => tweet.entities?.hashtags?.map((ht) => ht.tag))
-    //   .flat()
-    //   .filter((exists) => exists);
-
-    // const occurences = hashtags?.reduce(
-    //   (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
-    //   new Map(),
-    // );
-
-    // harder to read ? ^
-
     const hashtags = [];
     if (this.state.tweetsData?.data) {
       for (const tweet of this.state.tweetsData.data) {
@@ -78,29 +70,19 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
         }
       }
     }
-    const occurences: { [key: string]: number } = {};
-    for (const tag of hashtags) {
-      if (occurences[tag]) {
-        occurences[tag] += 1;
-      } else {
-        occurences[tag] = 1;
-      }
-    }
-    const mostOccurences = Object.values(occurences).sort((a, b) => b - a)[0];
-    const mostCommonHashTag = Object.keys(occurences).filter(
-      (hashtag) => occurences[hashtag] === mostOccurences,
-    );
-    return mostCommonHashTag || 'N/A';
+    return findMostOccurring(hashtags);
   }
 
-  // /**
-  //  * Retrieves the highest number of tweets that were created on any given day by the given user.
-  //  * A day's time period here is defined from 00:00:00 to 23:59:59
-  //  * If there are no tweets for the given user, this method should return 0.
-  //  */
-  // getMostTweetsInOneDay(tweets) {
-  //   //TODO Implement
-  // }
+  // returns the time between the first and last fetched tweet in Days, HH:MM:SS
+  getTimeBetweenFirstAndLastTweet() {
+    const createdAtDates = [];
+    if (this.state.tweetsData?.data) {
+      for (const tweet of this.state.tweetsData.data) {
+        createdAtDates.push(tweet.created_at);
+      }
+    }
+    return getTimeDifference(createdAtDates);
+  }
 
   // /**
   //  * Finds the first 6 characters of the ID of the longest tweet for the given user.
@@ -112,17 +94,6 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
   // getLongestTweetIdPrefix(tweets) {
   //   //TODO Implement
   // }
-
-  // /**
-  //  * Retrieves the most number of days between tweets by the given user.
-  //  * This should always be rounded down to the complete number of days, i.e. if the time is 12 days & 3 hours, this
-  //  * method should return 12.
-  //  * If there are no tweets for the given user, this method should return 0.
-  //  */
-  // getMostDaysBetweenTweets(tweets) {
-  //   //TODO Implement
-  // }
-  // // }
 
   render() {
     return (
@@ -136,9 +107,11 @@ class Tweets extends Component<RouteComponentProps, ITweetsState> {
               </div>
             </div>
             <div className='stats-box-right stats-box'>
-              <div className='stats-box-heading'>Most Tweets in one days</div>
+              <div className='stats-box-heading'>
+                Time between first and last tweet
+              </div>
               <div id='most-tweets' className='stats-box-info'>
-                {/* {this.getMostTweetsInOneDay(this.state.tweetsData)} */}
+                {this.getTimeBetweenFirstAndLastTweet()}
               </div>
             </div>
           </div>
